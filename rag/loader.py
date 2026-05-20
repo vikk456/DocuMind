@@ -1,5 +1,5 @@
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 def load_pdf(file_path: str, chunk_size: int = 500, chunk_overlap: int = 50):
     loader = PyPDFLoader(file_path)

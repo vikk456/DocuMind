@@ -1,7 +1,8 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+import os
 
 template = """
 answer the question based on the context provided
@@ -16,25 +17,32 @@ Answer:
 """
 
 prompt = PromptTemplate(
-    input_variables = ["context" , "question"],
-    template = template
+    input_variables=["context", "question"],
+    template=template
 )
 
 
-llm = ChatGoogleGenerativeAI(
-    model = "gemini-1.5-flash",
-    temperature = 0.2
+llm = ChatGroq(
+    model="llama-3.1-8b-instant",
+    temperature=0.2,
+    api_key=os.getenv("GROQ_API_KEY")
 )
+
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
-def execute_chain(retriever , question):
+
+def execute_chain(retriever, question):
     pipeline = (
         {
             "context": retriever | format_docs,
-            "question" : RunnablePassthrough()
-        } 
+            "question": RunnablePassthrough()
+        }
         | prompt | llm | StrOutputParser()
     )
     return pipeline.invoke(question)
+
+
+def get_sources(retriever, question):
+    return retriever.invoke(question)
