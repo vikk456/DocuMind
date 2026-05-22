@@ -22,18 +22,16 @@ prompt = PromptTemplate(
 )
 
 
-llm = ChatGroq(
-    model="llama-3.1-8b-instant",
-    temperature=0.2,
-    api_key=os.getenv("GROQ_API_KEY")
-)
-
-
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
 
 def execute_chain(retriever, question):
+    llm = ChatGroq(
+        model="llama-3.1-8b-instant",
+        temperature=0.2,
+        api_key=os.getenv("GROQ_API_KEY")
+    )
     pipeline = (
         {
             "context": retriever | format_docs,
